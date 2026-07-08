@@ -78,11 +78,9 @@ function Signup() {
     }
 
     if (!form.confirmPassword.trim()) {
-      newErrors.confirmPassword =
-        "Confirm Password is required";
+      newErrors.confirmPassword = "Confirm Password is required";
     } else if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword =
-        "Passwords do not match";
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
@@ -93,8 +91,45 @@ function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!form.name.trim()) {
+      toast.error("Full Name is required.");
+      return;
+    }
+
+    if (!form.email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+
+    if (!validateEmail(form.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (!form.password.trim()) {
+      toast.error("Password is required.");
+      return;
+    }
+
+    if (!validatePassword(form.password)) {
+      toast.error(
+        "Password must contain uppercase, lowercase, number and special character."
+      );
+      return;
+    }
+
+    if (!form.confirmPassword.trim()) {
+      toast.error("Confirm Password is required.");
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
     if (!validateForm()) {
-      toast.error("Please fix the errors.");
+      toast.error("Please correct the highlighted fields.");
       return;
     }
 
@@ -113,26 +148,31 @@ function Signup() {
         password: "",
         confirmPassword: "",
       });
+
+      setErrors({});
     }, 2000);
   };
 
-  return (
+    return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-950 via-black to-emerald-950 p-4 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
 
-<div className="absolute bottom-0 right-0 w-80 h-80 bg-green-500/20 rounded-full blur-3xl animate-pulse"></div>
+      {/* Background Glow */}
+      <div className="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
 
-  <div className="relative z-10 bg-slate-900 border border-slate-700 w-full max-w-md rounded-3xl shadow-2xl p-8">
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-green-600/20 rounded-full blur-3xl animate-pulse"></div>
 
-    <h2 className="text-4xl font-extrabold text-center bg-linear-to-r from-emerald-400 via-green-500 to-lime-400 bg-clip-text text-transparent">
-      Create Account
-    </h2>
+      {/* Signup Card */}
+      <div className="relative z-10 bg-slate-900 border border-slate-700 w-full max-w-md rounded-3xl shadow-2xl p-8">
 
-    <p className="text-center text-slate-300 mt-3 mb-8">
-      Sign up to continue
-    </p>
+        <h2 className="text-4xl font-extrabold text-center bg-linear-to-r from-emerald-400 via-green-500 to-lime-400 bg-clip-text text-transparent">
+          Create Account
+        </h2>
 
-    <form onSubmit={handleSubmit}>
+        <p className="text-center text-slate-300 mt-3 mb-8">
+          Sign up to continue
+        </p>
+
+        <form onSubmit={handleSubmit}>
 
           <InputField
             label="Full Name"
@@ -158,7 +198,7 @@ function Signup() {
             name="password"
             value={form.password}
             onChange={handleChange}
-            placeholder="Enter password"
+            placeholder="Enter your password"
             error={errors.password}
           />
 
@@ -169,34 +209,51 @@ function Signup() {
             name="confirmPassword"
             value={form.confirmPassword}
             onChange={handleChange}
-            placeholder="Confirm password"
+            placeholder="Confirm your password"
             error={errors.confirmPassword}
           />
 
+                    {/* Create Account Button */}
+
           <button
             type="submit"
-            disabled={!isValid || loading}
-           className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-300
-${
-  !isValid || loading
-    ? "bg-slate-700 cursor-not-allowed"
-    : "bg-linear-to-r from-emerald-500 via-green-600 to-lime-500 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/30 active:scale-95"
-}`}
+            className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-300
+            ${
+              !isValid || loading
+                ? "bg-slate-700 cursor-allowed opacity-70"
+                : "bg-linear-to-r from-emerald-500 via-green-600 to-lime-500 hover:scale-[1.02] hover:shadow-xl hover:shadow-emerald-500/40 active:scale-95"
+            }`}
           >
             {loading ? <Loader /> : "Create Account"}
           </button>
 
-        </form>
+          {/* Divider */}
 
-        <p className="text-center mt-6 text-slate-300">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-emerald-400 font-semibold hover:text-lime-400 transition duration-300"
-          >
-            Login
-          </Link>
-        </p>
+          <div className="flex items-center my-8">
+            <div className="flex-1 border-t border-slate-700"></div>
+
+            <span className="px-4 text-slate-400 text-sm">
+              Secure Registration
+            </span>
+
+            <div className="flex-1 border-t border-slate-700"></div>
+          </div>
+
+          {/* Footer */}
+
+          <p className="text-center text-slate-400">
+            Already have an account?{" "}
+
+            <Link
+              to="/login"
+              className="font-semibold text-emerald-400 hover:text-lime-400 transition-colors duration-300"
+            >
+              Login
+            </Link>
+
+          </p>
+
+        </form>
 
       </div>
 
