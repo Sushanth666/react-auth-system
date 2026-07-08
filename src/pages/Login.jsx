@@ -8,6 +8,8 @@ import {
   FaEyeSlash,
 } from "react-icons/fa";
 
+import Loader from "../components/Loader";
+
 import {
   validateEmail,
   validatePassword,
@@ -85,41 +87,61 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!form.email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+
+    if (!form.password.trim()) {
+      toast.error("Password is required.");
+      return;
+    }
+
+    if (!validateEmail(form.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (!validatePassword(form.password)) {
+      toast.error(
+        "Password must contain uppercase, lowercase, number and special character."
+      );
+      return;
+    }
+
     if (!validateForm()) {
-      toast.error("Please fix the errors.");
+      toast.error("Please correct the highlighted fields.");
       return;
     }
 
     setLoading(true);
-setTimeout(() => {
-  if (form.remember) {
-    localStorage.setItem("rememberEmail", form.email);
-  } else {
-    localStorage.removeItem("rememberEmail");
-  }
 
-  toast.success("Login Successful!");
+    setTimeout(() => {
+      if (form.remember) {
+        localStorage.setItem("rememberEmail", form.email);
+      } else {
+        localStorage.removeItem("rememberEmail");
+      }
 
-  setLoading(false);
+      setLoading(false);
 
-  // Clear form after successful login
-  setForm({
-    email: form.remember ? form.email : "",
-    password: "",
-    remember: form.remember,
-  });
+      toast.success("Login Successful!");
 
-  // Clear validation errors
-  setErrors({});
+      setForm({
+        email: form.remember ? form.email : "",
+        password: "",
+        remember: form.remember,
+      });
 
-  console.log(form);
-}, 2000);
+      setErrors({});
+
+      console.log(form);
+    }, 2000);
   };
     return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-black to-emerald-950 flex items-center justify-center p-4 relative overflow-hidden">
 
       {/* Background Glow */}
-
       <div className="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
 
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-green-600/20 rounded-full blur-3xl animate-pulse"></div>
@@ -139,7 +161,6 @@ setTimeout(() => {
         <form onSubmit={handleSubmit}>
 
           {/* Email */}
-
           <div className="mb-5">
 
             <label className="block text-slate-300 mb-2 font-medium">
@@ -148,7 +169,7 @@ setTimeout(() => {
 
             <div className="relative">
 
-              <FaEnvelope className="absolute left-4 top-4 text-slate-400" />
+              <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
 
               <input
                 type="email"
@@ -159,8 +180,8 @@ setTimeout(() => {
                 className={`w-full rounded-xl bg-slate-800 border py-3 pl-12 pr-4 text-white placeholder:text-slate-400 outline-none transition-all duration-300
                 ${
                   errors.email
-                    ? "border-red-500"
-                    : "border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20"
+                    ? "border-red-500 focus:ring-4 focus:ring-red-500/20"
+                    : "border-slate-700 hover:border-emerald-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20"
                 }`}
               />
 
@@ -175,7 +196,6 @@ setTimeout(() => {
           </div>
 
           {/* Password */}
-
           <div className="mb-6">
 
             <label className="block text-slate-300 mb-2 font-medium">
@@ -184,7 +204,7 @@ setTimeout(() => {
 
             <div className="relative">
 
-              <FaLock className="absolute left-4 top-4 text-slate-400" />
+              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
 
               <input
                 type={showPassword ? "text" : "password"}
@@ -195,15 +215,15 @@ setTimeout(() => {
                 className={`w-full rounded-xl bg-slate-800 border py-3 pl-12 pr-12 text-white placeholder:text-slate-400 outline-none transition-all duration-300
                 ${
                   errors.password
-                    ? "border-red-500"
-                    : "border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20"
+                    ? "border-red-500 focus:ring-4 focus:ring-red-500/20"
+                    : "border-slate-700 hover:border-emerald-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20"
                 }`}
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-4 text-slate-400 hover:text-emerald-400 transition"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-400 transition-colors duration-300"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -218,11 +238,10 @@ setTimeout(() => {
 
           </div>
 
-          {/* Remember */}
-
+          {/* Remember Me & Forgot Password */}
           <div className="flex justify-between items-center mb-6">
 
-            <label className="flex items-center gap-2 text-slate-300">
+            <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
 
               <input
                 type="checkbox"
@@ -238,7 +257,7 @@ setTimeout(() => {
 
             <button
               type="button"
-              className="text-emerald-400 hover:text-lime-400 transition"
+              className="text-emerald-400 hover:text-lime-400 transition-colors duration-300"
             >
               Forgot Password?
             </button>
@@ -248,15 +267,14 @@ setTimeout(() => {
 
           <button
             type="submit"
-            disabled={!isValid || loading}
             className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-300
             ${
               !isValid || loading
-                ? "bg-slate-700 cursor-not-allowed"
-                : "bg-linear-to-r from-emerald-500 via-green-600 to-lime-500 hover:scale-[1.02] hover:shadow-xl hover:shadow-emerald-500/30 active:scale-95"
+                ? "bg-slate-700"
+                : "bg-linear-to-r from-emerald-500 via-green-600 to-lime-500 hover:scale-[1.02] hover:shadow-xl hover:shadow-emerald-500/40 active:scale-95"
             }`}
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? <Loader /> : "Sign In"}
           </button>
 
           {/* Divider */}
@@ -282,7 +300,6 @@ setTimeout(() => {
             >
               Create Account
             </Link>
-
           </p>
 
         </form>
